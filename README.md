@@ -43,7 +43,7 @@ The University of Adelaide
 
 ### Pre-trained models
 
-Note: Due to a change of MXNet in padding at pooling layers, some of the computed feature maps in Model A will have different sizes from as stated in our paper. However, this has no effect on Model A1, which always uses convolution layers (instead of pooling layers) for down-sampling. So, in most cases, just use Model A1, which was initialized from Model A, and furhter tuned for severl additional epochs.
+Note: Due to a change of MXNet in padding at pooling layers, some of the computed feature maps in Model A will have different sizes from as stated in our paper. However, this has no effect on Model A1, which always uses convolution layers (instead of pooling layers) for down-sampling. So, in most cases, just use Model A1, which was initialized from Model A, and further tuned for several additional epochs.
 
     model|top-1|top-5
     :---:|:---:|:---:
