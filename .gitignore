@@ -1,5 +1,6 @@
 *~
 
+# cache dirs
 data/*
 models/*
 output/*
