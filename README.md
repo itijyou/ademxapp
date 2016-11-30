@@ -20,24 +20,26 @@ The University of Adelaide
 
     models/
 
-0. Run the below command from shell to check the classification performance on the ILSVRC 2012 val set:
+0. Run the below command to check the classification performance on the ILSVRC 2012 val set:
 
     ```bash
-    sh tools/pafenet.sh
+    sh tools/ilsvrc-cls_eval.sh
     ```
 
-0. Get the network symbol:
+0. Get the network symbols:
 
     ```python
-    from util.symbol.resnet_v2 import rna_model_a
+    from util.symbol.resnet_v2 import rna_model_a, rna_model_a1
     net = rna_model_a()
+    net1 = rna_model_a1()
     ```
 
-0. Get the feature symbol (without the global pooling and the top-most linear classifier):
+0. Get the feature symbols (without the global pooling and the top-most linear classifier):
 
     ```python
-    from util.symbol.resnet_v2 import rna_feat_a
+    from util.symbol.resnet_v2 import rna_feat_a, rna_feat_a1
     feat = rna_feat_a()
+    feat1 = rna_feat_a1()
     ```
 
 
