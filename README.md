@@ -49,8 +49,9 @@ Note: Due to a change of MXNet in padding at pooling layers, some of the compute
 
     model|top-1|top-5
     :---:|:---:|:---:
-    [Model A](https://cloudstor.aarnet.edu.au/plus/index.php/s/V7dncO4H0ijzeRj)|19.20%|4.73%
-    [Model A1](https://cloudstor.aarnet.edu.au/plus/index.php/s/NOPhJ247fhVDnZH)|19.54%|4.75%
+    [Model A](https://cdn.rawgit.com/itijyou/ademxapp/master/misc/ilsvrc_model_a.pdf) [aar](https://cloudstor.aarnet.edu.au/plus/index.php/s/V7dncO4H0ijzeRj)|19.20%|4.73%
+    Model A1 [aar](https://cloudstor.aarnet.edu.au/plus/index.php/s/NOPhJ247fhVDnZH)|19.54%|4.75%
+
 
 <!---
 ### Citation
