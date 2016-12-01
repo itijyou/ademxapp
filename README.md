@@ -1,9 +1,8 @@
 # ademxapp
 
-Visual applications by
+Visual applications by the University of Adelaide
 
-The University of Adelaide
-
+For more details, refer to our report: [Wider or Deeper: Revisiting the ResNet Model for Visual Recognition](https://arxiv.org/abs/1611.10080).
 
 [//]: # (## PafeNet: Path Fully Effectuated Networks)
 
@@ -43,16 +42,36 @@ The University of Adelaide
     ```
 
 
-### Pre-trained models
-
-For more details, refer to our report: [https://arxiv.org/abs/1611.10080](https://arxiv.org/abs/1611.10080).
+### Image classification
 
 Note: Due to a change of MXNet in padding at pooling layers, some of the computed feature maps in Model A will have different sizes from as stated in our paper. However, this has no effect on Model A1, which always uses convolution layers (instead of pooling layers) for down-sampling. So, in most cases, just use Model A1, which was initialized from Model A, and further tuned for several additional epochs. 
+
+Results on the ILSVRC 2012 val set:
 
     model|top-1|top-5
     :---:|:---:|:---:
     [Model A](https://cdn.rawgit.com/itijyou/ademxapp/master/misc/ilsvrc_model_a.pdf) [aar](https://cloudstor.aarnet.edu.au/plus/index.php/s/V7dncO4H0ijzeRj)|19.20%|4.73%
     Model A1 [aar](https://cloudstor.aarnet.edu.au/plus/index.php/s/NOPhJ247fhVDnZH)|19.54%|4.75%
+
+
+### Semantic image segmentation
+
+The below results are obtained using our pre-trained models. We will release these models soon.
+    
+Results on the PASCAL VOC test set:
+
+    model|mean IoU
+    :---:|:---:
+    Model A1, 2 conv.|82.5
+
+<!--
+Results on the Cityscapes test set:
+
+    model|class IoU|class iIoU| category IoU| category iIoU
+    :---:|:---:|:---:|:---:|:---:
+    Model A2, 2 conv.|78.4|59.1|90.9|81.1
+    Model A2, 2 conv., coarse|79.9|59.7|91.2|80.8
+-->
 
 
 ### Citation
