@@ -25,6 +25,7 @@ For more details, refer to our report: [Wider or Deeper: Revisiting the ResNet M
     sh tools/ilsvrc-cls_eval.sh
     ```
 
+<!--
 0. Get the network symbols:
 
     ```python
@@ -40,6 +41,7 @@ For more details, refer to our report: [Wider or Deeper: Revisiting the ResNet M
     feat = rna_feat_a()
     feat1 = rna_feat_a1()
     ```
+-->
 
 
 ### Image classification
