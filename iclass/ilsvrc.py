@@ -203,7 +203,7 @@ def _get_module(model_specs, net=None):
             symcfg['pool_top_infer_style'] = 'caffe'
             
             if model_specs['net_name'] == 'a':
-                net = rna_model_a(model_specs['classes'])
+                net = rna_model_a(model_specs['classes'], model_specs['feat_stride'])
             elif model_specs['net_name'] == 'a1':
                 net = rna_model_a1(model_specs['classes'])
         if net is None:

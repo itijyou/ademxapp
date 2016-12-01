@@ -257,9 +257,9 @@ def rna_feat_a(inv_resolution=32):
                         LevelBlock('b131', 1, 1., 'n', False, 0.),]
     return rna_feat(conv1_layers, level_blocks)
 
-def rna_model_a(classes):
+def rna_model_a(classes, inv_resolution=32):
     '''RNA Model A'''
-    feat = rna_feat_a()
+    feat = rna_feat_a(inv_resolution)
     return rn_top(feat, 'linear{}'.format(classes), classes)
 
 
