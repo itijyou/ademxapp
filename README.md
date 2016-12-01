@@ -45,7 +45,9 @@ The University of Adelaide
 
 ### Pre-trained models
 
-Note: Due to a change of MXNet in padding at pooling layers, some of the computed feature maps in Model A will have different sizes from as stated in our paper. However, this has no effect on Model A1, which always uses convolution layers (instead of pooling layers) for down-sampling. So, in most cases, just use Model A1, which was initialized from Model A, and further tuned for several additional epochs.
+For more details, refer to our report: [https://arxiv.org/abs/1611.10080](https://arxiv.org/abs/1611.10080).
+
+Note: Due to a change of MXNet in padding at pooling layers, some of the computed feature maps in Model A will have different sizes from as stated in our paper. However, this has no effect on Model A1, which always uses convolution layers (instead of pooling layers) for down-sampling. So, in most cases, just use Model A1, which was initialized from Model A, and further tuned for several additional epochs. 
 
     model|top-1|top-5
     :---:|:---:|:---:
@@ -53,16 +55,14 @@ Note: Due to a change of MXNet in padding at pooling layers, some of the compute
     Model A1 [aar](https://cloudstor.aarnet.edu.au/plus/index.php/s/NOPhJ247fhVDnZH)|19.54%|4.75%
 
 
-<!---
 ### Citation
 
 If you use this code or these models in your research, please cite:
 
-    @Misc{PafeNet.2016.Wu,
+    @Misc{2016.ZifengWu,
         author = {Zifeng Wu and Chunhua Shen and Anton van den Hegel},
         title = {Wider or Deeper: Revisiting the ResNet Model for Visual Recognition},
         year = {2016}
-        howpublished = {arXiv:?.?}
+        howpublished = {arXiv:1611.10080}
     }
--->
 
