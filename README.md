@@ -79,7 +79,7 @@ Results on the Cityscapes test set:
 If you use this code or these models in your research, please cite:
 
     @Misc{2016.ZifengWu,
-        author = {Zifeng Wu and Chunhua Shen and Anton van den Hegel},
+        author = {Zifeng Wu and Chunhua Shen and Anton van den Hengel},
         title = {Wider or Deeper: Revisiting the ResNet Model for Visual Recognition},
         year = {2016}
         howpublished = {arXiv:1611.10080}
