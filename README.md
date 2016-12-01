@@ -19,10 +19,12 @@ For more details, refer to our report: [Wider or Deeper: Revisiting the ResNet M
 
     models/
 
-0. Run the below command to check the classification performance on the ILSVRC 2012 val set:
+0. Try these commands to check the classification performance on the ILSVRC 2012 val set:
 
     ```bash
-    sh tools/ilsvrc-cls_eval.sh
+    python iclass/ilsvrc.py --data-root data/ilsvrc12 --output output --batch-images 10 --phase val --weight models/ilsvrc-cls_rna-a_cls1000_ep-0001.params --split val --test-scales 320
+    
+    python iclass/ilsvrc.py --data-root data/ilsvrc12 --output output --batch-images 10 --phase val --weight models/ilsvrc-cls_rna-a1_cls1000_ep-0001.params --split val --test-scales 320
     ```
 
 <!--
