@@ -90,37 +90,37 @@ def rna_feat(conv1_layers, level_blocks):
     # TODO: these may only work for b33
     def _ds_by_pl(data, name, level, dilate):
         assert level > 0
-        ds = level_blocks[level].downsample
-        if not ds == 'p':
+        level_block = level_blocks[level]
+        if not level_block.downsample == 'p':
             return data, dilate
-        stride = 2
-        inc_dilate = level_blocks[level].dilate
+        pool_stride = stride = 2
+        inc_dilate = level_block.dilate
         pad = -1
         if inc_dilate:
-            stride = 1
+            pool_stride = 1
             pad = dilate
-        print 'Pooling stride: {}, dilate: {}, pad: {}'.format(stride, dilate, pad)
-        top = pool(data, name, stride=stride, dilate=dilate, pad=pad, pool_type=pool_type)
+        print 'Pooling stride: {}, dilate: {}, pad: {}'.format(pool_stride, dilate, pad)
+        top = pool(data, name, stride=pool_stride, dilate=dilate, pad=pad, pool_type=pool_type)
         if inc_dilate:
-            dilate *= ds[1]
+            dilate *= stride
         return top, dilate
     def _ds_by_cv(data, name, filters, level, dilate, kernel=3, dropout_rate=0.):
         assert level > 1
-        ds = level_blocks[level-1].downsample
-        if not ds == 'c':
+        level_block = level_blocks[level-1]
+        if not level_block.downsample == 'c':
             print 'First block on level {}, dilate: {}'.format(level, dilate)
             top = res_block(data, name, filters, kernel=kernel,
                             dilate=dilate, identity_map=False,
                             dropout_rate=dropout_rate)
         else:
             stride = 2
-            inc_dilate = level_blocks[level].dilate
+            inc_dilate = level_block.dilate
             print 'First block on level {}, stride: {}, dilate: {}'.format(level, stride, dilate)
             top = res_block(data, name, filters, kernel=kernel, stride=stride,
                             dilate=dilate, inc_dilate=inc_dilate, identity_map=False,
                             dropout_rate=dropout_rate)
             if inc_dilate:
-                dilate *= ds[1]
+                dilate *= stride
         return top, dilate
     
     dilate = 1
@@ -237,16 +237,24 @@ def rna_feat_a(inv_resolution=32):
     assert inv_resolution in (16, 32)
     '''RNA features Model A'''
     conv1_layers = [ConvStage(3),]
-    level_blocks = [LevelBlock(None, 0, 1., 'n', False, 0.),
-                    LevelBlock('b33', 0, 1., 'p', False, 0.),
-                    LevelBlock('b33', 3, 1., 'p', False, 0.),
-                    LevelBlock('b33', 3, 1., 'p', False, 0.),
-                    LevelBlock('b33', 6, 1., 'p', False, 0.),
-                    LevelBlock('b33', 3, 1., 'p', False, 0.),
-                    LevelBlock('b131', 1, 1., 'n', False, 0.),
-                    LevelBlock('b131', 1, 1., 'n', False, 0.),]
-    if inv_resolution == 16:
-        level_blocks[6].dilate = True
+    if inv_resolution == 32:
+        level_blocks = [LevelBlock(None, 0, 1., 'n', False, 0.),
+                        LevelBlock('b33', 0, 1., 'p', False, 0.),
+                        LevelBlock('b33', 3, 1., 'p', False, 0.),
+                        LevelBlock('b33', 3, 1., 'p', False, 0.),
+                        LevelBlock('b33', 6, 1., 'p', False, 0.),
+                        LevelBlock('b33', 3, 1., 'p', False, 0.),
+                        LevelBlock('b131', 1, 1., 'n', False, 0.),
+                        LevelBlock('b131', 1, 1., 'n', False, 0.),]
+    elif inv_resolution == 16:
+        level_blocks = [LevelBlock(None, 0, 1., 'n', False, 0.),
+                        LevelBlock('b33', 0, 1., 'p', False, 0.),
+                        LevelBlock('b33', 3, 1., 'p', False, 0.),
+                        LevelBlock('b33', 3, 1., 'p', False, 0.),
+                        LevelBlock('b33', 6, 1., 'p', False, 0.),
+                        LevelBlock('b33', 3, 1., 'p', True, 0.),
+                        LevelBlock('b131', 1, 1., 'n', False, 0.),
+                        LevelBlock('b131', 1, 1., 'n', False, 0.),]
     return rna_feat(conv1_layers, level_blocks)
 
 def rna_model_a(classes):
@@ -259,18 +267,33 @@ def rna_feat_a1(inv_resolution=32):
     assert inv_resolution in (8, 16, 32)
     '''RNA features Model A1'''
     conv1_layers = [ConvStage(3),]
-    level_blocks = [LevelBlock(None, 0, 1., 'n', False, 0.),
-                    LevelBlock('b33', 0, 1., 'c', False, 0.),
-                    LevelBlock('b33', 3, 1., 'c', False, 0.),
-                    LevelBlock('b33', 3, 1., 'c', False, 0.),
-                    LevelBlock('b33', 6, 1., 'c', False, 0.),
-                    LevelBlock('b33', 3, 1., 'c', False, 0.),
-                    LevelBlock('b131', 1, 1., 'n', False, 0.),
-                    LevelBlock('b131', 1, 1., 'n', False, 0.),]
-    if inv_resolution <= 16:
-        level_blocks[6].dilate = True
-    if inv_resolution <= 8:
-        level_blocks[5].dilate = True
+    if inv_resolution == 32:
+        level_blocks = [LevelBlock(None, 0, 1., 'n', False, 0.),
+                        LevelBlock('b33', 0, 1., 'c', False, 0.),
+                        LevelBlock('b33', 3, 1., 'c', False, 0.),
+                        LevelBlock('b33', 3, 1., 'c', False, 0.),
+                        LevelBlock('b33', 6, 1., 'c', False, 0.),
+                        LevelBlock('b33', 3, 1., 'c', False, 0.),
+                        LevelBlock('b131', 1, 1., 'n', False, 0.),
+                        LevelBlock('b131', 1, 1., 'n', False, 0.),]
+    elif inv_resolution == 16:
+        level_blocks = [LevelBlock(None, 0, 1., 'n', False, 0.),
+                        LevelBlock('b33', 0, 1., 'c', False, 0.),
+                        LevelBlock('b33', 3, 1., 'c', False, 0.),
+                        LevelBlock('b33', 3, 1., 'c', False, 0.),
+                        LevelBlock('b33', 6, 1., 'c', False, 0.),
+                        LevelBlock('b33', 3, 1., 'c', True, 0.),
+                        LevelBlock('b131', 1, 1., 'n', False, 0.),
+                        LevelBlock('b131', 1, 1., 'n', False, 0.),]
+    elif inv_resolution == 8:
+        level_blocks = [LevelBlock(None, 0, 1., 'n', False, 0.),
+                        LevelBlock('b33', 0, 1., 'c', False, 0.),
+                        LevelBlock('b33', 3, 1., 'c', False, 0.),
+                        LevelBlock('b33', 3, 1., 'c', False, 0.),
+                        LevelBlock('b33', 6, 1., 'c', True, 0.),
+                        LevelBlock('b33', 3, 1., 'c', True, 0.),
+                        LevelBlock('b131', 1, 1., 'n', False, 0.),
+                        LevelBlock('b131', 1, 1., 'n', False, 0.),]
     return rna_feat(conv1_layers, level_blocks)
 
 def rna_model_a1(classes):
