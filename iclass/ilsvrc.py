@@ -197,12 +197,21 @@ def _get_scalemeanstd():
 
 def _get_module(model_specs, net=None):
     if net is None:
+        # the following lines show how to create symbols for our networks
         if model_specs['net_type'] == 'rna':
             from util.symbol.symbol import cfg as symcfg
             if model_specs['net_name'] == 'a':
                 # Model A has down-sampling operations by pooling,
-                # and it was trained using an old version of MXNet
+                # and it was trained using an old version of MXNet,
+                # so the following line is required to reproduce our result,
+                # by directly using our trained model.
                 symcfg['pool_top_infer_style'] = 'caffe'
+                # When u train a new model from scratch,
+                # uncomment the following line.
+                # When u tune our pre-trained model,
+                # it also should be better to uncomment the following line.
+                # However, this is not empirically evaluated.
+                #symcfg['pool_top_infer_style'] = None
                 from util.symbol.resnet_v2 import rna_model_a
                 net = rna_model_a(model_specs['classes'], model_specs['feat_stride'])
             elif model_specs['net_name'] == 'a1':
