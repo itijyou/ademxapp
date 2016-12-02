@@ -199,12 +199,15 @@ def _get_module(model_specs, net=None):
     if net is None:
         if model_specs['net_type'] == 'rna':
             from util.symbol.symbol import cfg as symcfg
-            from util.symbol.resnet_v2 import rna_model_a, rna_model_a1
-            symcfg['pool_top_infer_style'] = 'caffe'
-            
             if model_specs['net_name'] == 'a':
+                # Model A has down-sampling operations by pooling,
+                # and it was trained using an old version of MXNet
+                symcfg['pool_top_infer_style'] = 'caffe'
+                from util.symbol.resnet_v2 import rna_model_a
                 net = rna_model_a(model_specs['classes'], model_specs['feat_stride'])
             elif model_specs['net_name'] == 'a1':
+                # Model A1 has no down-sampling operation by pooling
+                from util.symbol.resnet_v2 import rna_model_a1
                 net = rna_model_a1(model_specs['classes'])
         if net is None:
             raise NotImplementedError('Unknown network: {}'.format(model_specs))
