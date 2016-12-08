@@ -318,15 +318,15 @@ def _val_impl(args, model_specs, logger):
 if __name__ == '__main__':
     args, model_specs = parse_args()
     
+    if len(args.output) > 0 and not osp.isdir(args.output):
+        os.makedirs(args.output)
+    
     if model_specs['net_type'] not in ('rn', 'rna',):
         util.cfg['choose_interpolation_method'] = True
     
     logger = util.set_logger(args.output, args.log_file, args.debug)
     logger.info('Run with arguments: %s', args)
     logger.info('and model specs: %s', model_specs)
-    
-    if len(args.output) > 0 and not os.path.isdir(args.output):
-        os.makedirs(args.output)
     
     if args.phase == 'train':
         NotImplementedError('Unknown phase: {}'.format(args.phase))

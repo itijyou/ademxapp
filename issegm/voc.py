@@ -559,12 +559,12 @@ if __name__ == "__main__":
     
     args, model_specs = parse_args()
     
+    if len(args.output) > 0:
+        _make_dirs(args.output)
+    
     logger = util.set_logger(args.output, args.log_file, args.debug)
     logger.info('start with arguments %s', args)
     logger.info('and model specs %s', model_specs)
-    
-    if len(args.output) > 0:
-        _make_dirs(args.output)
     
     if args.phase == 'train':
         NotImplementedError('Unknown phase: {}'.format(args.phase))
