@@ -7,20 +7,33 @@ import mxnet as mx
 cfg = {}
 
 
-def _attr_scope_lr(attr_type):
+def _attr_scope_lr(lr_type, lr_owner):
+    assert lr_type in ('alex', 'alex10', 'torch')
     # weight (lr_mult, wd_mult); bias;
     # 1, 1; 2, 0;
-    # so apply this to bias only
-    if attr_type == 'alex':
-        return mx.AttrScope(lr_mult='2.', wd_mult='0.')
+    if lr_type == 'alex':
+        if lr_owner == 'weight':
+            return mx.AttrScope()
+        elif lr_owner == 'bias':
+            return mx.AttrScope(lr_mult='2.', wd_mult='0.')
+        else:
+            assert False
+    # 10, 1; 20, 0;
+    if lr_type == 'alex10':
+        if lr_owner == 'weight':
+            return mx.AttrScope(lr_mult='10.', wd_mult='1.')
+        elif lr_owner == 'bias':
+            return mx.AttrScope(lr_mult='20.', wd_mult='0.')
+        else:
+            assert False
     # 0, 0; 0, 0;
     # so apply this to both
-    if attr_type == 'fixed':
+    if lr_type == 'fixed':
+        assert lr_owner in ('weight', 'bias')
         return mx.AttrScope(lr_mult='0.', wd_mult='0.')
     # 1, 1; 1, 1;
-    # so it is ok to do nothing
-    else:
-        return mx.AttrScope()
+    # so do nothing
+    return mx.AttrScope()
 
 
 def relu(data, name):
@@ -43,9 +56,10 @@ def conv(data, name, filters, kernel=3, stride=1, dilate=1, pad=-1,
     if workspace < 0:
         workspace = cfg.get('workspace', 512)
     lr_type = cfg.get('lr_type', 'torch')
-    assert lr_type in ('alex', 'torch')
+    with _attr_scope_lr(lr_type, 'weight'):
+        weight = mx.sym.Variable('{}_weight'.format(name))
     if no_bias:
-        return mx.sym.Convolution(data, name=name,
+        return mx.sym.Convolution(data=data, weight=weight, name=name,
                                   kernel=(kernel, kernel),
                                   stride=(stride, stride),
                                   dilate=(dilate, dilate),
@@ -55,9 +69,9 @@ def conv(data, name, filters, kernel=3, stride=1, dilate=1, pad=-1,
                                   workspace=workspace,
                                   no_bias=True)
     else:
-        with _attr_scope_lr(lr_type):
+        with _attr_scope_lr(lr_type, 'bias'):
             bias = mx.sym.Variable('{}_bias'.format(name))
-        return mx.sym.Convolution(data=data, bias=bias, name=name,
+        return mx.sym.Convolution(data=data, weight=weight, bias=bias, name=name,
                                   kernel=(kernel, kernel),
                                   stride=(stride, stride),
                                   dilate=(dilate, dilate),
@@ -80,10 +94,11 @@ def bn(data, name, eps=1e-5, fix_gamma=False, use_global_stats=None):
                                 use_global_stats=use_global_stats)
     else:
         lr_type = cfg.get('lr_type', 'torch')
-        assert lr_type in ('alex', 'torch')
-        with _attr_scope_lr(lr_type):
+        with _attr_scope_lr(lr_type, 'weight'):
+            gamma = mx.sym.Variable('{}_gamma'.format(name))
+        with _attr_scope_lr(lr_type, 'bias'):
             beta = mx.sym.Variable('{}_beta'.format(name))
-        return mx.sym.BatchNorm(data=data, beta=beta, name=name,
+        return mx.sym.BatchNorm(data=data, gamma=gamma, beta=beta, name=name,
                                 eps=eps,
                                 fix_gamma=False,
                                 use_global_stats=use_global_stats)
@@ -137,15 +152,16 @@ def pool(data, name, kernel=3, stride=2, dilate=1, pad=-1, pool_type='max', glob
 
 def fc(data, name, hiddens, no_bias=False):
     lr_type = cfg.get('lr_type', 'torch')
-    assert lr_type in ('alex', 'torch')
+    with _attr_scope_lr(lr_type, 'weight'):
+        weight = mx.sym.Variable('{}_weight'.format(name))
     if no_bias:
-        return mx.sym.FullyConnected(data, name=name,
+        return mx.sym.FullyConnected(data=data, weight=weight, name=name,
                                      num_hidden=hiddens,
                                      no_bias=True)
     else:
-        with _attr_scope_lr(lr_type):
+        with _attr_scope_lr(lr_type, 'bias'):
             bias = mx.sym.Variable('{}_bias'.format(name))
-        return mx.sym.FullyConnected(data=data, bias=bias, name=name,
+        return mx.sym.FullyConnected(data=data, weight=weight, bias=bias, name=name,
                                      num_hidden=hiddens,
                                      no_bias=False)
 
