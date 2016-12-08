@@ -1,9 +1,9 @@
-# pylint: skip-file
 import collections
 
 import mxnet as mx
 
 from symbol import relu, dropout, conv, bn, pool, fc, softmax_out
+from resnet_v1 import conv_stage as conv_state_v1
 
 
 # conv stage for residual block v2
@@ -219,13 +219,30 @@ def rna_feat(conv1_layers, level_blocks):
     return relu7
 
 
-def rn_top(feat, name, channels):
+def rn_top(feat, fc_name, classes):
     pool7 = pool(feat, 'pool7', pool_type='avg', global_pool=True)
-    scores = fc(pool7, name, channels)
+    scores = fc(pool7, fc_name, classes)
     return softmax_out(scores)
 
+
+def fcn_top(feat, classifier, fc_name):
+    top = feat
+    for j, layer in enumerate(classifier[:-1]):
+        top = conv_state_v1(top, 'conv6{}'.format(chr(j+97)),
+                            layer.channels,
+                            kernel=layer.kernel,
+                            dilate=layer.dilate,
+                            dropout_rate=0.)
+    layer = classifier[-1]
+    scores = conv(top, fc_name,
+                  layer.channels,
+                  kernel=layer.kernel,
+                  dilate=layer.dilate)
+    return softmax_out(scores, multi_output=True)
+
+
 ConvStage = collections.namedtuple('ConvStage',
-                                   ['kernel'])
+                                   ['channels', 'kernel', 'dilate'])
 
 LevelBlock = collections.namedtuple('LevelBlock',
                                     ['type', 'num', 'width',
@@ -236,9 +253,9 @@ LevelBlock = collections.namedtuple('LevelBlock',
 def rna_feat_a(inv_resolution=32):
     assert inv_resolution in (16, 32)
     '''RNA features Model A'''
-    conv1_layers = [ConvStage(3),]
+    conv1_layers = [ConvStage(1000, 3, 1),]
     if inv_resolution == 32:
-        level_blocks = [LevelBlock(None, 0, 1., 'n', False, 0.),
+        level_blocks = [None,
                         LevelBlock('b33', 0, 1., 'p', False, 0.),
                         LevelBlock('b33', 3, 1., 'p', False, 0.),
                         LevelBlock('b33', 3, 1., 'p', False, 0.),
@@ -247,7 +264,7 @@ def rna_feat_a(inv_resolution=32):
                         LevelBlock('b131', 1, 1., 'n', False, 0.),
                         LevelBlock('b131', 1, 1., 'n', False, 0.),]
     elif inv_resolution == 16:
-        level_blocks = [LevelBlock(None, 0, 1., 'n', False, 0.),
+        level_blocks = [None,
                         LevelBlock('b33', 0, 1., 'p', False, 0.),
                         LevelBlock('b33', 3, 1., 'p', False, 0.),
                         LevelBlock('b33', 3, 1., 'p', False, 0.),
@@ -266,9 +283,9 @@ def rna_model_a(classes, inv_resolution=32):
 def rna_feat_a1(inv_resolution=32):
     assert inv_resolution in (8, 16, 32)
     '''RNA features Model A1'''
-    conv1_layers = [ConvStage(3),]
+    conv1_layers = [ConvStage(1000, 3, 1),]
     if inv_resolution == 32:
-        level_blocks = [LevelBlock(None, 0, 1., 'n', False, 0.),
+        level_blocks = [None,
                         LevelBlock('b33', 0, 1., 'c', False, 0.),
                         LevelBlock('b33', 3, 1., 'c', False, 0.),
                         LevelBlock('b33', 3, 1., 'c', False, 0.),
@@ -277,7 +294,7 @@ def rna_feat_a1(inv_resolution=32):
                         LevelBlock('b131', 1, 1., 'n', False, 0.),
                         LevelBlock('b131', 1, 1., 'n', False, 0.),]
     elif inv_resolution == 16:
-        level_blocks = [LevelBlock(None, 0, 1., 'n', False, 0.),
+        level_blocks = [None,
                         LevelBlock('b33', 0, 1., 'c', False, 0.),
                         LevelBlock('b33', 3, 1., 'c', False, 0.),
                         LevelBlock('b33', 3, 1., 'c', False, 0.),
@@ -286,7 +303,7 @@ def rna_feat_a1(inv_resolution=32):
                         LevelBlock('b131', 1, 1., 'n', False, 0.),
                         LevelBlock('b131', 1, 1., 'n', False, 0.),]
     elif inv_resolution == 8:
-        level_blocks = [LevelBlock(None, 0, 1., 'n', False, 0.),
+        level_blocks = [None,
                         LevelBlock('b33', 0, 1., 'c', False, 0.),
                         LevelBlock('b33', 3, 1., 'c', False, 0.),
                         LevelBlock('b33', 3, 1., 'c', False, 0.),
@@ -300,4 +317,11 @@ def rna_model_a1(classes):
     '''RNA Model A1'''
     feat = rna_feat_a1()
     return rn_top(feat, 'linear{}'.format(classes), classes)
+
+def fcrna_model_a1(classes, inv_resolution=8):
+    '''FCRNA Model A1'''
+    feat = rna_feat_a1(inv_resolution)
+    classifier = [ConvStage(512, 3, 12),
+                  ConvStage(classes, 3, 12),]
+    return fcn_top(feat, classifier, 'linear{}'.format(classes))
 
