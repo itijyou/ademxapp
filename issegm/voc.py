@@ -88,9 +88,6 @@ def parse_args():
     parser.add_argument('--phase',
                         help='Phase of this call, e.g., train, val or test.',
                         default='train', type=str)
-    parser.add_argument('--transformer', dest='transformer', 
-                        help='If use a transformer.',
-                        default=False, action='store_true')
     # for testing
     parser.add_argument('--test-scales', dest='test_scales',
                         help='Lengths of the longer side to resize an image into, e.g., 224,256.',
