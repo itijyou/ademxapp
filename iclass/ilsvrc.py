@@ -43,14 +43,13 @@ def parse_model_label(args):
         i += 1
     
     model_specs = {
-        # model only
+        # model
         'net_type': net_type,
         'net_name': net_name,
         'classes': classes,
         'feat_stride': feat_stride,
         # data
         'dataset': dataset,
-        'split_filename': 'iclass/data/{}/{}.lst'.format(dataset, args.split),
     }
     return model_specs
 
@@ -245,7 +244,7 @@ def _val_impl(args, model_specs, logger):
     batch_images = args.batch_images
     
     if has_gt:
-        gt_labels = np.array(parse_split_file(model_specs['split_filename'], args.data_root)[1])
+        gt_labels = np.array(parse_split_file(model_specs['dataset'], args.split, args.data_root)[1])
     save_dir = os.path.join(args.output, os.path.splitext(args.log_file)[0])
     if not os.path.isdir(save_dir):
         os.makedirs(save_dir)
@@ -263,8 +262,10 @@ def _val_impl(args, model_specs, logger):
             ts_list.append(ts.ListInput(ts.ColorScale(np.single(scale_))))
         ts_list += [ts.ListInput(ts.ColorNormalize(mean_, std_))]
         transformer = ts.Compose(ts_list)
-        dataiter = FileIter(split_filename=model_specs['split_filename'],
+        dataiter = FileIter(dataset=model_specs['dataset'],
+                            split=args.split,
                             data_root=args.data_root,
+                            sampler='random',
                             has_gt=has_gt,
                             batch_images=batch_images,
                             transformer=transformer,

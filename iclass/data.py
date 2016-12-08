@@ -12,15 +12,16 @@ from mxnet.io import DataBatch, DataIter
 from mxnet.ndarray import array
 
 from util.io import BatchFetcherGroup
-from util.sampler import BalancedSampler_OneClassPerImage as BalancedSampler
+#from util.sampler import BalancedSampler_OneClassPerImage as BalancedSampler
 from util.sampler import FixedSampler, RandomSampler
 from util.util import as_list
 
 
-def parse_split_file(split_fn, data_root):
+def parse_split_file(dataset, split, data_root):
+    split_filename = 'iclass/data/{}/{}.lst'.format(dataset, split)
     image_list = []
     label_list = []
-    with open(split_fn) as f:
+    with open(split_filename) as f:
         for item in f.readlines():
             fields = item.strip().split('\t')
             image_list.append(os.path.join(data_root, fields[2]))
@@ -32,7 +33,10 @@ class FileIter(DataIter):
     Parameters
     ----------
 
-    split_filename : string
+    dataset : string
+        dataset
+    split : string
+        data split
         the list file of images and labels, whose each line is in the format:
         image_id(0 indexed) \t image_label \t image_file_path
     data_root : string
@@ -55,11 +59,12 @@ class FileIter(DataIter):
         the type of prefechers, e.g., process/thread
     """
     def __init__(self,
-                 split_filename,
+                 dataset,
+                 split,
                  data_root,
                  data_name = 'data',
                  label_name = 'softmax_label',
-                 sampler = None,
+                 sampler = 'fixed',
                  has_gt = True,
                  batch_images = 256,
                  transformer = None,
@@ -67,17 +72,18 @@ class FileIter(DataIter):
                  prefetcher_type = 'thread',):
         super(FileIter, self).__init__()
         
-        self._split_filename = split_filename
         self._data_name = data_name
         self._label_name = label_name
         self._has_gt = has_gt
         self._batch_images = batch_images
         self._transformer = transformer
         
-        self._image_list, self._label_list = parse_split_file(split_filename, data_root)
-        self._perm_len = len(self._image_list) if sampler is None else sampler._perm_len
-        if sampler is None:
+        self._image_list, self._label_list = parse_split_file(dataset, split, data_root)
+        self._perm_len = len(self._image_list)
+        if sampler == 'fixed':
             sampler = FixedSampler(self._perm_len)
+        elif sampler == 'random':
+            sampler = RandomSampler(self._perm_len)
         
         data_batch = self.read([0])
         self.batch_size = self._batch_images * data_batch[1].shape[0]
