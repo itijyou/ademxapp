@@ -91,18 +91,6 @@ def parse_args():
     parser.add_argument('--phase',
                         help='Phase of this call, e.g., train/val.',
                         default='train', type=str)
-    parser.add_argument('--kvstore', dest='kvstore',
-                        help='The type of kvstore, e.g., local/device.',
-                        default='device', type=str)
-    parser.add_argument('--prefetch-threads', dest='prefetch_threads',
-                        help='The number of threads to fetch data.',
-                        default=1, type=int)
-    parser.add_argument('--prefetcher', dest='prefetcher',
-                        help='Type of prefetercher, e.g., process/thread.',
-                        default='thread', type=str)
-    parser.add_argument('--backward-do-mirror', dest='backward_do_mirror',
-                        help='True means less gpu memory usage.',
-                        default=False, action='store_true')
     # for testing
     parser.add_argument('--test-scales', dest='test_scales',
                         help='Lengths of the shorter side to resize an image into, e.g., 224,256.',
@@ -114,12 +102,24 @@ def parse_args():
                         help='If average predictions of three crops from an image.',
                         default=False, action='store_true')
     #
+    parser.add_argument('--kvstore', dest='kvstore',
+                        help='The type of kvstore, e.g., local/device.',
+                        default='device', type=str)
+    parser.add_argument('--prefetch-threads', dest='prefetch_threads',
+                        help='The number of threads to fetch data.',
+                        default=1, type=int)
+    parser.add_argument('--prefetcher', dest='prefetcher',
+                        help='Type of prefetercher, e.g., process/thread.',
+                        default='thread', type=str)
     parser.add_argument('--log-file', dest='log_file',
                         default=None, type=str)
     parser.add_argument('--debug',
                         help='True means logging debug info.',
                         default=False, action='store_true')
-    
+    parser.add_argument('--backward-do-mirror', dest='backward_do_mirror',
+                        help='True means less gpu memory usage.',
+                        default=False, action='store_true')
+
     if len(sys.argv) == 1:
         parser.print_help()
         sys.exit(1)

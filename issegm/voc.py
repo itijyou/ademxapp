@@ -86,7 +86,7 @@ def parse_args():
                         help='The number of epochs to run.',
                         default=None, type=int)
     parser.add_argument('--phase',
-                        help='Phase of this call, e.g., train, val or test.',
+                        help='Phase of this call, e.g., train/val.',
                         default='train', type=str)
     # for testing
     parser.add_argument('--test-scales', dest='test_scales',
@@ -106,13 +106,13 @@ def parse_args():
                         default=True, action='store_false')
     #
     parser.add_argument('--kvstore', dest='kvstore',
-                        help='The type of kvstore, e.g., local or device.',
+                        help='The type of kvstore, e.g., local/device.',
                         default='device', type=str)
     parser.add_argument('--prefetch-threads', dest='prefetch_threads',
                         help='The number of threads to fetch data.',
                         default=1, type=int)
     parser.add_argument('--prefetcher', dest='prefetcher',
-                        help='The type of prefetercher, e.g., process or thread.',
+                        help='The type of prefetercher, e.g., process/thread.',
                         default='thread', type=str)
     parser.add_argument('--cache-images', dest='cache_images', 
                         help='If cache images, e.g., 0/1',
