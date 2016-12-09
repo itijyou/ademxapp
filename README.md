@@ -11,14 +11,18 @@ To use, first install [MXNet](https://github.com/dmlc/mxnet).
 
 ### Updates
 
-* **Recent updates**
+* Recent updates
     + Model A1 for ADE20K trained using the *train* set with testing code
-    + Segmentation results with **multi-scale testing** on VOC<!-- and Cityscapes -->.
-    <!-- + Results on VOC using COCO for pre-training. -->
+    + Segmentation results with multi-scale testing on VOC
 
 * Initial commit
     + Model A and Model A1 for ILSVRC with testing code
-    + Segmentation results with **single-scale testing** on VOC and Cityscapes
+    + Segmentation results with single-scale testing on VOC and Cityscapes
+
+* Planned
+    + Training code
+    + Segmentation results with multi-scale testing on Cityscapes
+    + Results on VOC using COCO for pre-training
 
 
 ### Image classification
