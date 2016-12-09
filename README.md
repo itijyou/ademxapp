@@ -29,11 +29,15 @@ To use, first install [MXNet](https://github.com/dmlc/mxnet).
 
 0. Download the [ILSVRC 2012 classification val set](http://www.image-net.org/challenges/LSVRC/2012/nnoupb/ILSVRC2012_img_val.tar), and put the extracted images into the directory:
 
+    ```
     data/ilsvrc12/ILSVRC2012_val/
+    ```
 
 0. Download the models as below, and put them into the directory:
 
+    ```
     models/
+    ```
 
 0. Try these commands to check the classification performance on the ILSVRC 2012 val set:
 
@@ -57,7 +61,9 @@ Results on the ILSVRC 2012 val set tested with a single scale (320, without flip
 
 We show the effectiveness of our models (as pre-trained features) by semantic image segmenatation using **plain dilated FCNs** initialized from our models. Currently, Model A1 trained on the *train* set of ADE20K is available. We will release more models soon. To use, download and put them into the directory:
 
+    ```
     models/
+    ```
 
 Note: [Model A2](https://cdn.rawgit.com/itijyou/ademxapp/master/misc/places_model_a2.pdf) was initialized from Model A, and tuned for 45k extra iterations using the Places data in ILSVRC 2016.
 
