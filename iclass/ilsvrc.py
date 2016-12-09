@@ -265,7 +265,7 @@ def _val_impl(args, model_specs, logger):
         dataiter = FileIter(dataset=model_specs['dataset'],
                             split=args.split,
                             data_root=args.data_root,
-                            sampler='random',
+                            sampler='fixed',
                             has_gt=has_gt,
                             batch_images=batch_images,
                             transformer=transformer,
@@ -321,7 +321,7 @@ if __name__ == '__main__':
     if len(args.output) > 0 and not osp.isdir(args.output):
         os.makedirs(args.output)
     
-    if model_specs['net_type'] not in ('rn', 'rna',):
+    if model_specs['net_type'] not in ('rn', 'rna'):
         util.cfg['choose_interpolation_method'] = True
     
     logger = util.set_logger(args.output, args.log_file, args.debug)
