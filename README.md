@@ -83,6 +83,7 @@ Note: [Model A2](https://cdn.rawgit.com/itijyou/ademxapp/master/misc/places_mode
     model|training data|testing scale|class IoU(%)|class iIoU(%)| category IoU(%)| category iIoU(%)
     :---|:---:|:---:|:---:|:---:|:---:|:---:
     Model A2, 2 conv.|fine|1024x2048|78.4|59.1|90.9|81.1
+    Model A2, 2 conv.|coarse|1024x2048|79.9|59.7|91.2|80.8
 
 <!--
     Model A2, 2 conv.|fine|multiple||||
@@ -93,7 +94,9 @@ Note: [Model A2](https://cdn.rawgit.com/itijyou/ademxapp/master/misc/places_mode
 
 0. Download the [ADE20K dataset](http://groups.csail.mit.edu/vision/datasets/ADE20K), and put the extracted images into the directory:
 
+    ```
     data/ade20k/
+    ```
 
     with the following structure:
 
