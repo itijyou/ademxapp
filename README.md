@@ -51,7 +51,7 @@ Results on the ILSVRC 2012 val set tested with a single scale (320, without flip
 
 ### Semantic image segmentation
 
-We show the effectiveness of our models (as pre-trained features) by semantic image segmenatation using **plain dilated FCNs** (**WITHOUT** CRF-based post-processing) initialized from our models. Currently, Model A1 trained on the *train* set of ADE20K is available. We will release more models soon. To use, download and put them into the directory:
+We show the effectiveness of our models (as pre-trained features) by semantic image segmenatation using **plain dilated FCNs** initialized from our models. Currently, Model A1 trained on the *train* set of ADE20K is available. We will release more models soon. To use, download and put them into the directory:
 
     models/
 
@@ -63,15 +63,19 @@ Note: [Model A2](https://cdn.rawgit.com/itijyou/ademxapp/master/misc/places_mode
     :---|:---:|:---:|:---:
     Model A1, 2 conv.|VOC; SBD|504|82.5
     Model A1, 2 conv.|VOC; SBD|multiple|[83.1](http://host.robots.ox.ac.uk:8080/anonymous/BEWE9S.html)
-    <!-- Model A1, 2 conv.|VOC; SBD; COCO|multiple| -->
+    <!--
+    Model A1, 2 conv.|VOC; SBD; COCO|multiple|
+    -->
 
 #### Results on the Cityscapes test set:
 
     model|training data|testing scale|class IoU(%)|class iIoU(%)| category IoU(%)| category iIoU(%)
     :---|:---:|:---:|:---:|:---:|:---:|:---:
     Model A2, 2 conv.|fine|1024x2048|78.4|59.1|90.9|81.1
-    <!-- Model A2, 2 conv.|fine|multiple|||| -->
-    <!-- Model A2, 2 conv.|fine; coarse|multiple|||| -->
+    <!--
+    Model A2, 2 conv.|fine|multiple||||
+    Model A2, 2 conv.|fine; coarse|multiple||||
+    -->
 
 #### ADE20K:
 
