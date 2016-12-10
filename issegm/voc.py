@@ -306,8 +306,8 @@ def _get_module(margs, dargs, net=None):
         if model_specs['net_type'] == 'rna':
             from util.symbol.symbol import cfg as symcfg
             if model_specs['net_name'] == 'a1':
-                symcfg['use_global_stats'] = True
                 symcfg['workspace'] = dargs.mx_workspace
+                symcfg['use_global_stats'] = True
                 from util.symbol.resnet_v2 import fcrna_model_a1
                 net = fcrna_model_a1(margs.classes, margs.feat_stride)
         if net is None:
