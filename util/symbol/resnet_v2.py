@@ -228,6 +228,8 @@ def rn_top(feat, fc_name, classes):
 def fcn_top(feat, classifier, fc_name):
     top = feat
     for j, layer in enumerate(classifier[:-1]):
+        # This naming (conv6) is derived from the ResNets (with five levels),
+        # which is not accurate for our networks (with seven levels).
         top = conv_state_v1(top, 'conv6{}'.format(chr(j+97)),
                             layer.channels,
                             kernel=layer.kernel,
