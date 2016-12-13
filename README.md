@@ -123,9 +123,8 @@ Results on the *test* set:
 Results on the *val* set:
 
     model|testing scale|pixel accuracy (%)|mean IoU (%)|download
-    :---|:---:|:---:|:---:
+    :---|:---:|:---:|:---:|:---:
     [Model A1, 2 conv.](https://cdn.rawgit.com/itijyou/ademxapp/master/misc/ade20k_model_a1.pdf)|504|80.55|43.34|[aar](https://cloudstor.aarnet.edu.au/plus/index.php/s/E4JeZpmssK50kpn)
-
 
 ### Citation
 
