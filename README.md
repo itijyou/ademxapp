@@ -2,7 +2,7 @@
 
 Visual applications by the University of Adelaide
 
-In designing our Model A, we did not over-optimize its structure for efficiency unless it is neccessary, which leads us to a high-performance model without non-trivial building blocks. Besides, by doing so, we anticipate this model and its trivial variants to perform well when they are finetuned for new tasks, considering their better spatial efficiency and larger model capacity compared to conventional [ResNet](https://arxiv.org/abs/1512.03385) models.
+In designing our Model A, we did not over-optimize its structure for efficiency unless it was neccessary, which led us to a high-performance model without non-trivial building blocks. Besides, by doing so, we anticipate this model and its trivial variants to perform well when they are finetuned for new tasks, considering their better spatial efficiency and larger model sizes compared to conventional [ResNet](https://arxiv.org/abs/1512.03385) models.
 
 For more details, refer to our report: [Wider or Deeper: Revisiting the ResNet Model for Visual Recognition](https://arxiv.org/abs/1611.10080).
 
@@ -13,7 +13,7 @@ To use, first install [MXNet](https://github.com/dmlc/mxnet).
 
 * Recent updates
     + Model A1 for ADE20K trained using the *train* set with testing code
-    + Segmentation results with multi-scale testing on VOC
+    + Segmentation results with multi-scale testing on VOC and Cityscapes
 
 * Initial commit
     + Model A and Model A1 for ILSVRC with testing code
@@ -21,8 +21,8 @@ To use, first install [MXNet](https://github.com/dmlc/mxnet).
 
 * Planned
     + Training code
-    + Segmentation results with multi-scale testing on Cityscapes
     + Results on VOC using COCO for pre-training
+    + Model A1 trained on VOC and Citycapes.
 
 
 ### Image classification
@@ -51,7 +51,7 @@ Note: Due to a change of MXNet in padding at pooling layers, some of the compute
 
 Results on the ILSVRC 2012 val set tested with a single scale (320, without flipping):
 
-    model|top-1(%)|top-5(%)|download
+    model|top-1 error (%)|top-5 error (%)|download
     :---:|:---:|:---:|:---:
     [Model A](https://cdn.rawgit.com/itijyou/ademxapp/master/misc/ilsvrc_model_a.pdf)|19.20|4.73|[aar](https://cloudstor.aarnet.edu.au/plus/index.php/s/V7dncO4H0ijzeRj)
     [Model A1](https://cdn.rawgit.com/itijyou/ademxapp/master/misc/ilsvrc_model_a1.pdf)|19.54|4.75|[aar](https://cloudstor.aarnet.edu.au/plus/index.php/s/NOPhJ247fhVDnZH)
@@ -59,18 +59,21 @@ Results on the ILSVRC 2012 val set tested with a single scale (320, without flip
 
 ### Semantic image segmentation
 
-We show the effectiveness of our models (as pre-trained features) by semantic image segmenatation using **plain dilated FCNs** initialized from our models. Currently, Model A1 trained on the *train* set of ADE20K is available. We will release more models soon. Note: [Model A2](https://cdn.rawgit.com/itijyou/ademxapp/master/misc/places_model_a2.pdf) was initialized from Model A, and tuned for 45k extra iterations using the Places data in ILSVRC 2016.
+We show the effectiveness of our models (as pre-trained features) by semantic image segmenatation using **plain dilated FCNs** initialized from our models. Currently, Model A1 trained on the *train* set of ADE20K is available. We will release more models soon.
 
-
-0. To use, download and put them into the directory:
+* To use, download and put them into the directory:
 
     ```
     models/
     ```
 
-#### Results on the PASCAL VOC test set:
+Note: [Model A2](https://cdn.rawgit.com/itijyou/ademxapp/master/misc/places_model_a2.pdf) was initialized from Model A, and tuned for 45k extra iterations using the Places data in ILSVRC 2016.
 
-    model|training data|testing scale|mean IoU(%)
+#### PASCAL VOC 2012:
+
+Results on the *test* set:
+
+    model|training data|testing scale|mean IoU (%)
     :---|:---:|:---:|:---:
     Model A1, 2 conv.|VOC; SBD|504|82.5
     Model A1, 2 conv.|VOC; SBD|multiple|[83.1](http://host.robots.ox.ac.uk:8080/anonymous/BEWE9S.html)
@@ -79,17 +82,16 @@ We show the effectiveness of our models (as pre-trained features) by semantic im
     Model A1, 2 conv.|VOC; SBD; COCO|multiple|
 -->
 
-#### Results on the Cityscapes test set:
+#### Cityscapes:
 
-    model|training data|testing scale|class IoU(%)|class iIoU(%)| category IoU(%)| category iIoU(%)
+Results on the *test* set:
+
+    model|training data|testing scale|class IoU (%)|class iIoU (%)| category IoU (%)| category iIoU(%)
     :---|:---:|:---:|:---:|:---:|:---:|:---:
     Model A2, 2 conv.|fine|1024x2048|78.4|59.1|90.9|81.1
+    Model A2, 2 conv.|fine|multiple|79.4|58.0|91.0|80.1
     Model A2, 2 conv.|fine; coarse|1024x2048|79.9|59.7|91.2|80.8
-
-<!--
-    Model A2, 2 conv.|fine|multiple||||
-    Model A2, 2 conv.|fine; coarse|multiple||||
--->
+    Model A2, 2 conv.|fine; coarse|multiple|80.6|57.8|91.0|79.1
 
 #### ADE20K:
 
@@ -118,18 +120,18 @@ We show the effectiveness of our models (as pre-trained features) by semantic im
     python issegm/voc.py --data-root data/ade20k --output output --phase val --weight models/ade20k_rna-a1_cls150_s8_ep-0001.params --split val --test-scales 504 --test-flipping --test-steps 2 --gpus 0
     ```
 
-Results on the val set:
+Results on the *val* set:
 
-    model|testing scale|mean IoU(%)|download
+    model|testing scale|pixel accuracy (%)|mean IoU (%)|download
     :---|:---:|:---:|:---:
-    [Model A1, 2 conv.](https://cdn.rawgit.com/itijyou/ademxapp/master/misc/ade20k_model_a1.pdf)|504|43.34|[aar](https://cloudstor.aarnet.edu.au/plus/index.php/s/E4JeZpmssK50kpn)
+    [Model A1, 2 conv.](https://cdn.rawgit.com/itijyou/ademxapp/master/misc/ade20k_model_a1.pdf)|504|80.55|43.34|[aar](https://cloudstor.aarnet.edu.au/plus/index.php/s/E4JeZpmssK50kpn)
 
 
 ### Citation
 
 If you use this code or these models in your research, please cite:
 
-    @Misc{2016.ZifengWu,
+    @Misc{word.zifeng.2016,
         author = {Zifeng Wu and Chunhua Shen and Anton van den Hengel},
         title = {Wider or Deeper: {R}evisiting the ResNet Model for Visual Recognition},
         year = {2016}
