@@ -95,7 +95,7 @@ Results on the *test* set:
 
 #### ADE20K:
 
-0. Download the [ADE20K dataset](http://groups.csail.mit.edu/vision/datasets/ADE20K), and put the extracted images into the directory:
+0. Download the [ADE20K dataset](http://sceneparsing.csail.mit.edu/), and put the extracted images into the directory:
 
     ```
     data/ade20k/
