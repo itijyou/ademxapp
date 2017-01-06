@@ -564,7 +564,7 @@ if __name__ == "__main__":
     logger.info('and model specs %s', model_specs)
     
     if args.phase == 'train':
-        NotImplementedError('Unknown phase: {}'.format(args.phase))
+        raise NotImplementedError('Unknown phase: {}'.format(args.phase))
         #_train_impl(args, model_specs, logger)
     elif args.phase == 'val':
         _val_impl(args, model_specs, logger)
