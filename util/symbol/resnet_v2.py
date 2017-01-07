@@ -3,7 +3,7 @@ import collections
 import mxnet as mx
 
 from symbol import relu, dropout, conv, bn, pool, fc, softmax_out
-from resnet_v1 import conv_stage as conv_state_v1
+from resnet_v1 import conv_stage as conv_stage_v1
 
 
 # conv stage for residual block v2
@@ -230,7 +230,7 @@ def fcn_top(feat, classifier, fc_name):
     for j, layer in enumerate(classifier[:-1]):
         # This naming (conv6) is derived from the ResNets (with five levels),
         # which is not accurate for our networks (with seven levels).
-        top = conv_state_v1(top, 'conv6{}'.format(chr(j+97)),
+        top = conv_stage_v1(top, 'conv6{}'.format(chr(j+97)),
                             layer.channels,
                             kernel=layer.kernel,
                             dilate=layer.dilate,
