@@ -81,9 +81,10 @@ def conv(data, name, filters, kernel=3, stride=1, dilate=1, pad=-1,
                                   workspace=workspace,
                                   no_bias=False)
 
-def bn(data, name, eps=0.001, fix_gamma=False, use_global_stats=None):
+def bn(data, name, eps=1e-5, fix_gamma=False, use_global_stats=None):
     if use_global_stats is None:
-        use_global_stats = cfg.get('use_global_stats', False)
+        use_global_stats = cfg.get('bn_use_global_stats', False)
+    
     if fix_gamma:
         with mx.AttrScope(lr_mult='0.', wd_mult='0.'):
             gamma = mx.sym.Variable('{}_gamma'.format(name))
