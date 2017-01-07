@@ -12,8 +12,12 @@ import numpy as np
 
 import mxnet as mx
 
+from util import mxutil
 from util import transformer as ts
 from util import util
+from util.initializer import TorchXavier_Linear
+from util.lr_scheduler import FixedScheduler, LinearScheduler
+from util.optimizer import TorchNesterov
 
 from data import FileIter, parse_split_file
 
@@ -42,14 +46,40 @@ def parse_model_label(args):
         feat_stride = int(fields[i][len('s'):])
         i += 1
     
+    # images per batch
+    if args.batch_images is not None:
+        batch_images = args.batch_images
+    # input size
+    if args.crop_size is not None:
+        crop_size = args.crop_size
+    elif args.test_scales is not None:
+        crop_size = int(args.test_scales.split(',')[0])
+    # learning rate
+    lr_params = {
+        'type': 'fixed',
+        'base': 0.1,
+        'args': None,
+    }
+    if args.base_lr is not None:
+        lr_params['base'] = args.base_lr
+    # linear
+    if args.lr_type in ('linear',):
+        lr_params['type'] = args.lr_type
+    elif args.lr_type == 'step':
+        lr_params['args'] = {'step': [int(_) for _ in args.lr_steps.split(',')],
+                             'factor': 0.1}
+    
     model_specs = {
         # model
+        'lr_params': lr_params,
         'net_type': net_type,
         'net_name': net_name,
         'classes': classes,
         'feat_stride': feat_stride,
         # data
         'dataset': dataset,
+        'batch_images': batch_images,
+        'crop_size': crop_size,
     }
     return model_specs
 
@@ -72,13 +102,21 @@ def parse_args():
                         help='The number of images per batch.',
                         default=None, type=int)
     parser.add_argument('--crop-size', dest='crop_size',
-                        help='The size of network input.',
+                        help='The size of network input during training.',
                         default=None, type=int)
     parser.add_argument('--weights', default=None,
                         help='The path of a pretrained model.')
+    #
+    parser.add_argument('--lr-type', dest='lr_type',
+                        help='The learning rate scheduler, e.g., fixed(default)/step/linear',
+                        default=None, type=str)
     parser.add_argument('--base-lr', dest='base_lr',
                         help='The lr to start from.',
                         default=None, type=float)
+    parser.add_argument('--lr-steps', dest='lr_steps',
+                        help='The steps when to reduce lr.',
+                        default=None, type=str)
+    #
     parser.add_argument('--from-epoch', dest='from_epoch',
                         help='The epoch to start from.',
                         default=None, type=int)
@@ -88,6 +126,7 @@ def parse_args():
     parser.add_argument('--to-epoch', dest='to_epoch',
                         help='The number of epochs to run.',
                         default=None, type=int)
+    #
     parser.add_argument('--phase',
                         help='Phase of this call, e.g., train/val.',
                         default='train', type=str)
@@ -194,7 +233,7 @@ def _get_scalemeanstd():
             np.array([0.229, 0.224, 0.225]).reshape((1, 1, 3)))
     return None, None, None
 
-def _get_module(model_specs, net=None):
+def _get_module(args, model_specs, net=None):
     if net is None:
         # the following lines show how to create symbols for our networks
         if model_specs['net_type'] == 'rna':
@@ -225,15 +264,99 @@ def _get_module(model_specs, net=None):
 
 
 def _train_impl(args, model_specs, logger):
-    pass
+    # dataiter
+    scale_, mean_, std_ = _get_scalemeanstd()
+    assert scale_ == 1./255
+    pca = (np.array([0.2175, 0.0188, 0.0045]),
+           np.array([[-0.5675, 0.7192, 0.4009],
+                     [-0.5808, -0.0045, -0.814],
+                     [-0.5836, -0.6948, 0.4203]]))
+    crop_size = model_specs['crop_size']
+    transformer = ts.Compose([ts.RandomSizedCrop(crop_size),
+                              ts.ColorScale(np.single(1./255)),
+                              ts.ColorJitter(crop_size, 0.4, 0.4, 0.4),
+                              ts.Lighting(0.1, pca[0], pca[1]),
+                              ts.Bound(lower=0., upper=1.),
+                              ts.HorizontalFlip(),
+                              ts.ColorNormalize(mean_, std_),])
+    if model_specs['dataset'] == 'ilsvrc-cls':
+        dataiter = FileIter(dataset=model_specs['dataset'],
+                            split=args.split,
+                            data_root=args.data_root,
+                            sampler='random',
+                            batch_images=model_specs['batch_images'],
+                            transformer=transformer,
+                            prefetch_threads=args.prefetch_threads,
+                            prefetcher_type=args.prefetcher,)
+    else:
+        raise NotImplementedError('Unknown dataset: {}'.format(model_specs['dataset']))
+    dataiter.reset()
+    # optimizer
+    assert args.to_epoch is not None
+    if args.stop_epoch is not None:
+        assert args.stop_epoch > args.from_epoch and args.stop_epoch <= args.to_epoch
+    else:
+        args.stop_epoch = args.to_epoch
+    from_iter = args.from_epoch * dataiter.batches_per_epoch
+    to_iter = args.to_epoch * dataiter.batches_per_epoch
+    lr_params = model_specs['lr_params']
+    base_lr = lr_params['base']
+    if lr_params['type'] == 'fixed':
+        scheduler = FixedScheduler()
+    elif lr_params['type'] == 'step':
+        left_step = []
+        for step in lr_params['args']['step']:
+            if from_iter > step:
+                base_lr *= lr_params['args']['factor']
+                continue
+            left_step.append(step - from_iter)
+        model_specs['lr_params']['step'] = left_step
+        scheduler = mx.lr_scheduler.MultiFactorScheduler(**lr_params['args'])
+    elif lr_params['type'] == 'linear':
+        scheduler = LinearScheduler(updates=to_iter+1, frequency=50,
+                                    stop_lr=1e-6, offset=from_iter)
+    optimizer_params = {
+        'learning_rate': base_lr,
+        'momentum': 0.9,
+        'wd': 0.0001,
+        'lr_scheduler': scheduler,
+    }
+    # initializer
+    net_args = None
+    net_auxs = None
+    if args.weights is not None:
+        net_args, net_auxs = mxutil.load_params_from_file(args.weights)
+    initializer = mx.init.Mixed(
+        ['linear.*', '.*',],
+        [TorchXavier_Linear(rnd_type='uniform', factor_type='in', magnitude=1),
+         mx.init.Xavier(rnd_type='gaussian', factor_type='in', magnitude=2),]
+    )
+    # fit
+    to_model = os.path.join(args.output, '{}_ep'.format(args.model))
+    mod = _get_module(args, model_specs)
+    mod.fit(
+        dataiter,
+        eval_metric=_get_metric(),
+        batch_end_callback=mx.callback.Speedometer(dataiter.batch_size, 1),
+        epoch_end_callback=mx.callback.do_checkpoint(to_model),
+        kvstore=args.kvstore,
+        optimizer='TorchNesterov',
+        optimizer_params=optimizer_params,
+        initializer=initializer,
+        arg_params=net_args,
+        aux_params=net_auxs,
+        allow_missing=args.from_epoch == 0,
+        begin_epoch=args.from_epoch,
+        num_epoch=args.stop_epoch,
+    )
 
 
 #@profile
 def _val_impl(args, model_specs, logger):
     assert args.prefetch_threads == 1
     assert args.weights is not None
-    net_args, net_auxs = util.load_params_from_file(args.weights)
-    mod = _get_module(model_specs)
+    net_args, net_auxs = mxutil.load_params_from_file(args.weights)
+    mod = _get_module(args, model_specs)
     has_gt = args.split in ('train', 'val',)
     scale_, mean_, std_ = _get_scalemeanstd()
     if args.test_scales is None:
@@ -329,10 +452,9 @@ if __name__ == '__main__':
     logger.info('and model specs: %s', model_specs)
     
     if args.phase == 'train':
-        NotImplementedError('Unknown phase: {}'.format(args.phase))
-        #_train_impl(args, model_specs, logger)
+        _train_impl(args, model_specs, logger)
     elif args.phase == 'val':
         _val_impl(args, model_specs, logger)
     else:
-        NotImplementedError('Unknown phase: {}'.format(args.phase))
+        raise NotImplementedError('Unknown phase: {}'.format(args.phase))
 
