@@ -153,11 +153,18 @@ def parse_args():
     parser.add_argument('--log-file', dest='log_file',
                         default=None, type=str)
     parser.add_argument('--debug',
-                        help='True means logging debug info.',
+                        help='True for logging debug info.',
                         default=False, action='store_true')
     parser.add_argument('--backward-do-mirror', dest='backward_do_mirror',
-                        help='True means less gpu memory usage.',
+                        help='True for less gpu memory usage.',
                         default=False, action='store_true')
+    # for testing (our released old) pre-trained models (Model A and/or Model A1)
+    parser.add_argument('--no-choose-interp-method', dest='choose_interpolation_method',
+                        help='True to adaptively choose an interpolation method.',
+                        default=True, action='store_false')
+    parser.add_argument('--pool-top-infer-style', dest='pool_top_infer_style',
+                        help='Specify another convention, e.g., caffe.',
+                        default=None, type=str)
 
     if len(sys.argv) == 1:
         parser.print_help()
@@ -238,18 +245,27 @@ def _get_module(args, model_specs, net=None):
         # the following lines show how to create symbols for our networks
         if model_specs['net_type'] == 'rna':
             from util.symbol.symbol import cfg as symcfg
+            symcfg['pool_top_infer_style'] = args.pool_top_infer_style
+            if args.phase == 'val':
+                symcfg['bn_use_global_stats'] = True
             if model_specs['net_name'] == 'a':
+                #----
+                # Now use args.pool_top_infer_style to do the trick.
+                # Use 'caffe' when testing our pre-trained Model A,
+                # otherwise, use `None'.
+                #
                 # Model A has down-sampling operations by pooling,
                 # and it was trained using an old version of MXNet,
                 # so the following line is required to reproduce our result,
                 # by directly using our trained model.
-                symcfg['pool_top_infer_style'] = 'caffe'
+                #symcfg['pool_top_infer_style'] == 'caffe'
                 # When u train a new model from scratch,
-                # uncomment the following line.
+                # leave this field as `None'.
                 # When u tune our pre-trained model,
-                # it also should be better to uncomment the following line.
+                # it also should be better to use `None'.
                 # However, this is not empirically evaluated.
                 #symcfg['pool_top_infer_style'] = None
+                #----
                 from util.symbol.resnet_v2 import rna_model_a
                 net = rna_model_a(model_specs['classes'], model_specs['feat_stride'])
             elif model_specs['net_name'] == 'a1':
@@ -444,8 +460,7 @@ if __name__ == '__main__':
     if len(args.output) > 0 and not osp.isdir(args.output):
         os.makedirs(args.output)
     
-    if model_specs['net_type'] not in ('rn', 'rna'):
-        util.cfg['choose_interpolation_method'] = True
+    util.cfg['choose_interpolation_method'] = args.choose_interpolation_method
     
     logger = util.set_logger(args.output, args.log_file, args.debug)
     logger.info('Run with arguments: %s', args)
