@@ -40,7 +40,7 @@ class TorchXavier_Linear(mx.initializer.Xavier):
             scale = self._layers[layer_name]['scale']
             self._init_impl(scale, arr)
         else:
-            self._layers = {'arr': arr}
+            self._layers[layer_name] = {'arr': arr}
 
     def _init_weight(self, name, arr):
         layer_name = name[:-len('_weight')]
