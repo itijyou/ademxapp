@@ -305,9 +305,9 @@ def _get_module(margs, dargs, net=None):
         # the following lines show how to create symbols for our networks
         if model_specs['net_type'] == 'rna':
             from util.symbol.symbol import cfg as symcfg
+            symcfg['workspace'] = dargs.mx_workspace
+            symcfg['bn_use_global_stats'] = True
             if model_specs['net_name'] == 'a1':
-                symcfg['workspace'] = dargs.mx_workspace
-                symcfg['use_global_stats'] = True
                 from util.symbol.resnet_v2 import fcrna_model_a1
                 net = fcrna_model_a1(margs.classes, margs.feat_stride)
         if net is None:
