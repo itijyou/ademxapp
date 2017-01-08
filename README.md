@@ -33,7 +33,7 @@ To use, first install [MXNet](https://github.com/dmlc/mxnet).
 
 ### Image classification
 
-###### Pre-trained models
+##### Pre-trained models
 
 0. Download the ILSVRC 2012 classification val set [6.3GB](http://www.image-net.org/challenges/LSVRC/2012/nnoupb/ILSVRC2012_img_val.tar), and put the extracted images into the directory:
     ```
@@ -60,7 +60,7 @@ Results on the ILSVRC 2012 val set tested with a single scale (320, without flip
     [Model A1](https://cdn.rawgit.com/itijyou/ademxapp/master/misc/ilsvrc_model_a1.pdf)|19.54|4.75|[aar](https://cloudstor.aarnet.edu.au/plus/index.php/s/NOPhJ247fhVDnZH)
 Note: Due to a change of MXNet in padding at pooling layers, some of the computed feature maps in Model A will have different sizes from those stated in our report. However, this has no effect on Model A1, which always uses convolution layers (instead of pooling layers) for down-sampling. So, in most cases, just use Model A1, which was initialized from Model A, and further tuned for 45k extra iterations.
 
-###### New models
+##### New models
 
 0. Find a machine with 4 devices, each with at least 11G memories.
 
