@@ -110,6 +110,7 @@ Note: This code may not accurately reproduce our reported results, since there a
 We show the effectiveness of our models (as pre-trained features) by semantic image segmenatation using **plain dilated FCNs** initialized from our models. Currently, Model A1 trained on the *train* set of ADE20K is available. We will release more models soon.
 
 * To use, download and put them into the directory:
+
     ```
     models/
     ```
