@@ -99,7 +99,9 @@ Note: Due to a change of MXNet in padding at pooling layers, some of the compute
     ```
 
 It cost more than 40 days on our workstation with 4 Maxwell GTX Titan cards. So, be patient or try smaller models as described in our report.
+
 Note: The best setting (*prefetch-threads* and *prefetcher*) for efficiency can vary depending on the circumstances (the provided CPUs, GPUs, and filesystem).
+
 Note: This code may not accurately reproduce our reported results, since there are subtle differences in implementation, e.g., different cropping strategies, interpolation methods, and padding strategies.
 
 
