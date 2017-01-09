@@ -81,7 +81,7 @@ def conv(data, name, filters, kernel=3, stride=1, dilate=1, pad=-1,
                                   workspace=workspace,
                                   no_bias=False)
 
-def bn(data, name, eps=1e-5, fix_gamma=False, use_global_stats=None):
+def bn(data, name, eps=1.001e-5, fix_gamma=False, use_global_stats=None):
     if use_global_stats is None:
         use_global_stats = cfg.get('bn_use_global_stats', False)
     
