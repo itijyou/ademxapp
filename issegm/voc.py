@@ -14,6 +14,7 @@ import numpy as np
 
 import mxnet as mx
 
+from util import mxutil
 from util import transformer as ts
 from util import util
 
@@ -429,7 +430,7 @@ def _val_impl(args, model_specs, logger):
     dargs = argparse.Namespace(**get_dataset_specs(args, model_specs))
     
     image_list, label_list = parse_split_file(margs.dataset, args.split)
-    _, net_args, net_auxs = util.load_params(args.from_model, args.from_epoch)
+    _, net_args, net_auxs = mxutil.load_params(args.from_model, args.from_epoch)
     net = None
     mod = _get_module(margs, dargs, net)
     has_gt = args.split in ('train', 'val',)
