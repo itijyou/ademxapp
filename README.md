@@ -143,9 +143,9 @@ Results on the *test* set:
 
 For more information, refer to the official [leaderboard](https://www.cityscapes-dataset.com/benchmarks/#pixel-level-results).
 
-#### ADE20K:
+#### MIT Scene Parsing Benchmark (ADE20K):
 
-0. Download the [ADE20K dataset](http://sceneparsing.csail.mit.edu/), and put the extracted images into the directory:
+0. Download the [MIT Scene Parsing dataset](http://sceneparsing.csail.mit.edu/), and put the extracted images into the directory:
     ```
     data/ade20k/
     ```
