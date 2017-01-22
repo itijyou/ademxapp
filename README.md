@@ -14,10 +14,11 @@ To use, first install [MXNet](https://github.com/dmlc/mxnet).
 ### Updates
 
 * Recent updates
+    + Results on VOC using COCO for pre-training
     + Training code for image classification on ILSVRC 2012 (It still needs to be evaluated especially using the newest MXNet, which will probably be done in several weeks.)
-    + Fix the bug in testing resulted from changing the EPS in BatchNorm layers
 
 * Previous updates
+    + Fix the bug in testing resulted from changing the EPS in BatchNorm layers
     + Model A1 for ADE20K trained using the *train* set with testing code
     + Segmentation results with multi-scale testing on VOC and Cityscapes
 
@@ -27,7 +28,6 @@ To use, first install [MXNet](https://github.com/dmlc/mxnet).
 
 * Planned
     + Training code for semantic image segmentation
-    + Results on VOC using COCO for pre-training
     + Model A1 trained on VOC and Citycapes
 
 
@@ -125,10 +125,7 @@ Results on the *test* set:
     :---|:---:|:---:|:---:
     Model A1, 2 conv.|VOC; SBD|504|[82.5](http://host.robots.ox.ac.uk:8080/anonymous/H0KLZK.html)
     Model A1, 2 conv.|VOC; SBD|multiple|[83.1](http://host.robots.ox.ac.uk:8080/anonymous/BEWE9S.html)
-    
-<!--
-    Model A1, 2 conv.|VOC; SBD; COCO|multiple|
--->
+    Model A1, 2 conv.|VOC; SBD; COCO|multiple|[84.9](http://host.robots.ox.ac.uk:8080/anonymous/JU1PXP.html)
 
 #### Cityscapes:
 
