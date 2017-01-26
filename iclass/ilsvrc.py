@@ -181,7 +181,7 @@ def parse_args():
         if args.phase == 'val':
             args.output = os.path.dirname(args.weights)
         else:
-            args.output = '../output'
+            args.output = 'output'
     
     if args.weights is not None:
         #
@@ -219,7 +219,7 @@ def parse_args():
     
     model_specs = parse_model_label(args)
     if args.data_root is None:
-        args.data_root = os.path.join('../data', model_specs['dataset'])
+        args.data_root = os.path.join('data', model_specs['dataset'])
         
     return args, model_specs
 
