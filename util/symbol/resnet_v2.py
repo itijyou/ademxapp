@@ -225,7 +225,9 @@ def rn_top(feat, fc_name, classes):
     return softmax_out(scores)
 
 
-def fcn_top(feat, classifier, fc_name):
+def fcn_top(feat, classifier, fc_name, bootstrapping=False):
+    crop_size = 224
+    
     top = feat
     for j, layer in enumerate(classifier[:-1]):
         # This naming (conv6) is derived from the ResNets (with five levels),
@@ -240,7 +242,19 @@ def fcn_top(feat, classifier, fc_name):
                   layer.channels,
                   kernel=layer.kernel,
                   dilate=layer.dilate)
-    return softmax_out(scores, multi_output=True)
+    print 'Scores'
+    print scores.infer_shape(data=(64, 3, crop_size, crop_size))[1]
+    
+    if not bootstrapping:
+        return softmax_out(scores, multi_output=True)
+    else:
+        from layer import OhemSoftmax, OhemSoftmaxProp
+        return mx.sym.Custom(data=scores, name='softmax',
+                             op_type='ohem_softmax',
+                             ignore_label=255,
+                             thresh=0.6,
+                             min_kept=256,
+                             margin=-1)
 
 
 ConvStage = collections.namedtuple('ConvStage',
@@ -282,9 +296,12 @@ def rna_model_a(classes, inv_resolution=32):
     return rn_top(feat, 'linear{}'.format(classes), classes)
 
 
-def rna_feat_a1(inv_resolution=32):
-    assert inv_resolution in (8, 16, 32)
+def rna_feat_a1(inv_resolution=32, dropout=False):
     '''RNA features Model A1'''
+    assert inv_resolution in (8, 16, 32)
+    
+    do = [0.] * 6 + [0.3, 0.5] if dropout else [0.] * 8
+    
     conv1_layers = [ConvStage(1000, 3, 1),]
     if inv_resolution == 32:
         level_blocks = [None,
@@ -293,8 +310,8 @@ def rna_feat_a1(inv_resolution=32):
                         LevelBlock('b33', 3, 1., 'c', False, 0.),
                         LevelBlock('b33', 6, 1., 'c', False, 0.),
                         LevelBlock('b33', 3, 1., 'c', False, 0.),
-                        LevelBlock('b131', 1, 1., 'n', False, 0.),
-                        LevelBlock('b131', 1, 1., 'n', False, 0.),]
+                        LevelBlock('b131', 1, 1., 'n', False, do[6]),
+                        LevelBlock('b131', 1, 1., 'n', False, do[7]),]
     elif inv_resolution == 16:
         level_blocks = [None,
                         LevelBlock('b33', 0, 1., 'c', False, 0.),
@@ -302,8 +319,8 @@ def rna_feat_a1(inv_resolution=32):
                         LevelBlock('b33', 3, 1., 'c', False, 0.),
                         LevelBlock('b33', 6, 1., 'c', False, 0.),
                         LevelBlock('b33', 3, 1., 'c', True, 0.),
-                        LevelBlock('b131', 1, 1., 'n', False, 0.),
-                        LevelBlock('b131', 1, 1., 'n', False, 0.),]
+                        LevelBlock('b131', 1, 1., 'n', False, do[6]),
+                        LevelBlock('b131', 1, 1., 'n', False, do[7]),]
     elif inv_resolution == 8:
         level_blocks = [None,
                         LevelBlock('b33', 0, 1., 'c', False, 0.),
@@ -311,8 +328,8 @@ def rna_feat_a1(inv_resolution=32):
                         LevelBlock('b33', 3, 1., 'c', False, 0.),
                         LevelBlock('b33', 6, 1., 'c', True, 0.),
                         LevelBlock('b33', 3, 1., 'c', True, 0.),
-                        LevelBlock('b131', 1, 1., 'n', False, 0.),
-                        LevelBlock('b131', 1, 1., 'n', False, 0.),]
+                        LevelBlock('b131', 1, 1., 'n', False, do[6]),
+                        LevelBlock('b131', 1, 1., 'n', False, do[7]),]
     return rna_feat(conv1_layers, level_blocks)
 
 def rna_model_a1(classes):
@@ -320,10 +337,10 @@ def rna_model_a1(classes):
     feat = rna_feat_a1()
     return rn_top(feat, 'linear{}'.format(classes), classes)
 
-def fcrna_model_a1(classes, inv_resolution=8):
+def fcrna_model_a1(classes, inv_resolution=8, bootstrapping=False):
     '''FCRNA Model A1'''
-    feat = rna_feat_a1(inv_resolution)
+    feat = rna_feat_a1(inv_resolution, dropout=True)
     classifier = [ConvStage(512, 3, 12),
                   ConvStage(classes, 3, 12),]
-    return fcn_top(feat, classifier, 'linear{}'.format(classes))
+    return fcn_top(feat, classifier, 'linear{}'.format(classes), bootstrapping)
 
