@@ -367,6 +367,7 @@ def _get_module(args, margs, dargs, net=None):
         # the following lines show how to create symbols for our networks
         if model_specs['net_type'] == 'rna':
             from util.symbol.symbol import cfg as symcfg
+            symcfg['lr_type'] = 'alex'
             symcfg['workspace'] = dargs.mx_workspace
             symcfg['bn_use_global_stats'] = True
             if model_specs['net_name'] == 'a1':
