@@ -171,11 +171,11 @@ Results on the *test* set:
 
 0. Tune a Model A1, and check its performance:
     ```bash
-    python issegm/voc.py --gpus 0,1,2,3 --split train --data-root data/cityscapes --output output --model cityscapes_rna-a1_cls19 --batch-images 16 --crop-size 500 --origin-size 2048 --scale-rate-range 0.7,1.3 --weights models/ilsvrc-cls_rna-a1_cls1000_ep-0001.params --lr-type fixed --base-lr 0.0016 --to-epoch 140 --kvstore local --prefetch-threads 4 --prefetcher thread --backward-do-mirror
+    python issegm/voc.py --gpus 0,1,2,3 --split train --data-root data/cityscapes --output output --model cityscapes_rna-a1_cls19_s8 --batch-images 16 --crop-size 500 --origin-size 2048 --scale-rate-range 0.7,1.3 --weights models/ilsvrc-cls_rna-a1_cls1000_ep-0001.params --lr-type fixed --base-lr 0.0016 --to-epoch 140 --kvstore local --prefetch-threads 4 --prefetcher thread --backward-do-mirror
 
-    python issegm/voc.py --gpus 0,1,2,3 --split train --data-root data/cityscapes --output output --model cityscapes_rna-a1_cls19_x1-140 --batch-images 16 --crop-size 500 --origin-size 2048 --scale-rate-range 0.7,1.3 --weights output/cityscapes_rna-a1_cls19_ep-0140.params --lr-type linear --base-lr 0.0008 --to-epoch 64 --kvstore local --prefetch-threads 4 --prefetcher thread --backward-do-mirror
+    python issegm/voc.py --gpus 0,1,2,3 --split train --data-root data/cityscapes --output output --model cityscapes_rna-a1_cls19_s8_x1-140 --batch-images 16 --crop-size 500 --origin-size 2048 --scale-rate-range 0.7,1.3 --weights output/cityscapes_rna-a1_cls19_s8_ep-0140.params --lr-type linear --base-lr 0.0008 --to-epoch 64 --kvstore local --prefetch-threads 4 --prefetcher thread --backward-do-mirror
 
-    python issegm/voc.py --data-root data/cityscapes --output output --phase val --weights models/cityscapes_rna-a1_cls19_x1-140_ep-0064.params --split val --test-scales 2048 --test-flipping --gpus 0
+    python issegm/voc.py --data-root data/cityscapes --output output --phase val --weights models/cityscapes_rna-a1_cls19_s8_x1-140_ep-0064.params --split val --test-scales 2048 --test-flipping --gpus 0
     ```
 
 Note: We have not got a chance to train and test this model. It should return something a little worse than 77.86% (Model A2, 2conv.).
