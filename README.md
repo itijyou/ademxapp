@@ -15,12 +15,14 @@ To use, first install [MXNet](https://github.com/dmlc/mxnet).
 ### Updates
 
 * Recent updates
-    + Model A1 trained on VOC
-    + Training code for semantic image segmentation (Again, it needs to be evaluated.)
-    + Training code for image classification on ILSVRC 2012 (It still needs to be evaluated especially using the newest MXNet, which will probably be done in several weeks.)
-
-* Planned
     + Model A1 trained on Cityscapes
+    + Model A1 trained on VOC
+    + Training code for semantic image segmentation
+    + Training code for image classification on ILSVRC 2012 (Still needs to be evaluated.)
+
+<!---
+* Planned
+-->
 
 * History
     + Results on VOC using COCO for pre-training
@@ -107,7 +109,7 @@ Note: This code may not accurately reproduce our reported results, since there a
 
 ### Semantic image segmentation
 
-We show the effectiveness of our models (as pre-trained features) by semantic image segmenatation using **plain dilated FCNs** initialized from our models. Currently, Several A1 models trained on the *train* set of PASCAL VOC and ADE20K are available. We will release more models soon.
+We show the effectiveness of our models (as pre-trained features) by semantic image segmenatation using **plain dilated FCNs** initialized from our models. Several A1 models tuned on the *train* set of PASCAL VOC, Cityscapes and ADE20K are available.
 
 * To use, download and put them into the directory:
 
@@ -169,24 +171,25 @@ Results on the *test* set:
     git clone https://github.com/mcordts/cityscapesScripts.git data/cityscapesScripts
     ```
 
-0. Tune a Model A1, and check its performance:
+0. Check the performance of the pre-trained model:
     ```bash
-    python issegm/voc.py --gpus 0,1,2,3 --split train --data-root data/cityscapes --output output --model cityscapes_rna-a1_cls19_s8 --batch-images 16 --crop-size 500 --origin-size 2048 --scale-rate-range 0.7,1.3 --weights models/ilsvrc-cls_rna-a1_cls1000_ep-0001.params --lr-type fixed --base-lr 0.0016 --to-epoch 140 --kvstore local --prefetch-threads 4 --prefetcher thread --backward-do-mirror
-
-    python issegm/voc.py --gpus 0,1,2,3 --split train --data-root data/cityscapes --output output --model cityscapes_rna-a1_cls19_s8_x1-140 --batch-images 16 --crop-size 500 --origin-size 2048 --scale-rate-range 0.7,1.3 --weights output/cityscapes_rna-a1_cls19_s8_ep-0140.params --lr-type linear --base-lr 0.0008 --to-epoch 64 --kvstore local --prefetch-threads 4 --prefetcher thread --backward-do-mirror
-
-    python issegm/voc.py --data-root data/cityscapes --output output --phase val --weights models/cityscapes_rna-a1_cls19_s8_x1-140_ep-0064.params --split val --test-scales 2048 --test-flipping --gpus 0
+    python issegm/voc.py --data-root data/cityscapes --output output --phase val --weights models/cityscapes_rna-a1_cls19_s8_ep-0001.params --split val --test-scales 2048 --test-flipping --gpus 0
     ```
 
-Note: We have not got a chance to train and test this model. It should return something a little worse than 77.86% (Model A2, 2conv.).
+0. Tune a Model A1, and check its performance:
+    ```bash
+    python issegm/voc.py --gpus 0,1,2,3 --split train --data-root data/cityscapes --output output --model cityscapes_rna-a1_cls19_s8 --batch-images 16 --crop-size 500 --origin-size 2048 --scale-rate-range 0.7,1.3 --weights models/ilsvrc-cls_rna-a1_cls1000_ep-0001.params --lr-type fixed --base-lr 0.0016 --to-epoch 140 --kvstore local --prefetch-threads 8 --prefetcher process --cache-images 0 --backward-do-mirror
+
+    python issegm/voc.py --gpus 0,1,2,3 --split train --data-root data/cityscapes --output output --model cityscapes_rna-a1_cls19_s8_x1-140 --batch-images 16 --crop-size 500 --origin-size 2048 --scale-rate-range 0.7,1.3 --weights output/cityscapes_rna-a1_cls19_s8_ep-0140.params --lr-type linear --base-lr 0.0008 --to-epoch 64 --kvstore local --prefetch-threads 8 --prefetcher process --cache-images 0 --backward-do-mirror
+
+    python issegm/voc.py --data-root data/cityscapes --output output --phase val --weights output/cityscapes_rna-a1_cls19_s8_x1-140_ep-0064.params --split val --test-scales 2048 --test-flipping --gpus 0
+    ```
 
 Results on the *val* set:
 
     model|training data|testing scale|mean IoU (%)|download
     :---|:---:|:---:|:---:|:---:
-    Model A1, 2 conv.|fine|1024x2048|to be updated|to be updated
-    Model A2, 2 conv.|fine|1024x2048|77.86|--
-    Model A2, 2 conv.|fine; coarse|1024x2048|79.99|--
+    Model A1, 2 conv.|fine|1024x2048|78.08|[aar](https://cloudstor.aarnet.edu.au/plus/index.php/s/2hbvpro6J4XKVIu)
 
 Results on the *test* set:
 
