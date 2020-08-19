@@ -55,10 +55,10 @@ To use, first install [MXNet](https://github.com/dmlc/mxnet).
 
 Results on the ILSVRC 2012 val set tested with a single scale (320, without flipping):
 
-    model|top-1 error (%)|top-5 error (%)|download
-    :---:|:---:|:---:|:---:
-    [Model A](https://cdn.rawgit.com/itijyou/ademxapp/master/misc/ilsvrc_model_a.pdf)|19.20|4.73|[aar](https://cloudstor.aarnet.edu.au/plus/index.php/s/V7dncO4H0ijzeRj)
-    [Model A1](https://cdn.rawgit.com/itijyou/ademxapp/master/misc/ilsvrc_model_a1.pdf)|19.54|4.75|[aar](https://cloudstor.aarnet.edu.au/plus/index.php/s/NOPhJ247fhVDnZH)
+model|top-1 error (%)|top-5 error (%)|download
+:---:|:---:|:---:|:---:
+[Model A](https://cdn.rawgit.com/itijyou/ademxapp/master/misc/ilsvrc_model_a.pdf)|19.20|4.73|[aar](https://cloudstor.aarnet.edu.au/plus/index.php/s/V7dncO4H0ijzeRj)
+[Model A1](https://cdn.rawgit.com/itijyou/ademxapp/master/misc/ilsvrc_model_a1.pdf)|19.54|4.75|[aar](https://cloudstor.aarnet.edu.au/plus/index.php/s/NOPhJ247fhVDnZH)
 
 Note: Due to a change of MXNet in padding at pooling layers, some of the computed feature maps in Model A will have different sizes from those stated in our report. However, this has no effect on Model A1, which always uses convolution layers (instead of pooling layers) for down-sampling. So, in most cases, just use Model A1, which was initialized from Model A, and tuned for 45k extra iterations.
 
@@ -140,18 +140,18 @@ We show the effectiveness of our models (as pre-trained features) by semantic im
 
 Results on the *val* set:
 
-    model|training data|testing scale|mean IoU (%)|download
-    :---|:---:|:---:|:---:|:---:
-    Model A1, 2 conv.|VOC; SBD|500|80.84|[aar](https://cloudstor.aarnet.edu.au/plus/index.php/s/YqNptRcboMD44Kd)
-    Model A1, 2 conv.|VOC; SBD; COCO|500|82.86|[aar](https://cloudstor.aarnet.edu.au/plus/index.php/s/JKWePbLPlpfRDW4)
+model|training data|testing scale|mean IoU (%)|download
+:---|:---:|:---:|:---:|:---:
+Model A1, 2 conv.|VOC; SBD|500|80.84|[aar](https://cloudstor.aarnet.edu.au/plus/index.php/s/YqNptRcboMD44Kd)
+Model A1, 2 conv.|VOC; SBD; COCO|500|82.86|[aar](https://cloudstor.aarnet.edu.au/plus/index.php/s/JKWePbLPlpfRDW4)
 
 Results on the *test* set:
 
-    model|training data|testing scale|mean IoU (%)
-    :---|:---:|:---:|:---:
-    Model A1, 2 conv.|VOC; SBD|500|[82.5](http://host.robots.ox.ac.uk:8080/anonymous/H0KLZK.html)
-    Model A1, 2 conv.|VOC; SBD|multiple|[83.1](http://host.robots.ox.ac.uk:8080/anonymous/BEWE9S.html)
-    Model A1, 2 conv.|VOC; SBD; COCO|multiple|[84.9](http://host.robots.ox.ac.uk:8080/anonymous/JU1PXP.html)
+model|training data|testing scale|mean IoU (%)
+:---|:---:|:---:|:---:
+Model A1, 2 conv.|VOC; SBD|500|[82.5](http://host.robots.ox.ac.uk:8080/anonymous/H0KLZK.html)
+Model A1, 2 conv.|VOC; SBD|multiple|[83.1](http://host.robots.ox.ac.uk:8080/anonymous/BEWE9S.html)
+Model A1, 2 conv.|VOC; SBD; COCO|multiple|[84.9](http://host.robots.ox.ac.uk:8080/anonymous/JU1PXP.html)
 
 #### Cityscapes:
 
@@ -187,18 +187,18 @@ Results on the *test* set:
 
 Results on the *val* set:
 
-    model|training data|testing scale|mean IoU (%)|download
-    :---|:---:|:---:|:---:|:---:
-    Model A1, 2 conv.|fine|1024x2048|78.08|[aar](https://cloudstor.aarnet.edu.au/plus/index.php/s/2hbvpro6J4XKVIu)
+model|training data|testing scale|mean IoU (%)|download
+:---|:---:|:---:|:---:|:---:
+Model A1, 2 conv.|fine|1024x2048|78.08|[aar](https://cloudstor.aarnet.edu.au/plus/index.php/s/2hbvpro6J4XKVIu)
 
 Results on the *test* set:
 
-    model|training data|testing scale|class IoU (%)|class iIoU (%)| category IoU (%)| category iIoU(%)
-    :---|:---:|:---:|:---:|:---:|:---:|:---:
-    Model A2, 2 conv.|fine|1024x2048|78.4|59.1|90.9|81.1
-    Model A2, 2 conv.|fine|multiple|79.4|58.0|91.0|80.1
-    Model A2, 2 conv.|fine; coarse|1024x2048|79.9|59.7|91.2|80.8
-    Model A2, 2 conv.|fine; coarse|multiple|80.6|57.8|91.0|79.1
+model|training data|testing scale|class IoU (%)|class iIoU (%)| category IoU (%)| category iIoU(%)
+:---|:---:|:---:|:---:|:---:|:---:|:---:
+Model A2, 2 conv.|fine|1024x2048|78.4|59.1|90.9|81.1
+Model A2, 2 conv.|fine|multiple|79.4|58.0|91.0|80.1
+Model A2, 2 conv.|fine; coarse|1024x2048|79.9|59.7|91.2|80.8
+Model A2, 2 conv.|fine; coarse|multiple|80.6|57.8|91.0|79.1
 
 For more information, refer to the official [leaderboard](https://www.cityscapes-dataset.com/benchmarks/#pixel-level-results).
 
@@ -229,9 +229,9 @@ Note: [Model A2](https://cdn.rawgit.com/itijyou/ademxapp/master/misc/places_mode
 
 Results on the *val* set:
 
-    model|testing scale|pixel accuracy (%)|mean IoU (%)|download
-    :---|:---:|:---:|:---:|:---:
-    [Model A1, 2 conv.](https://cdn.rawgit.com/itijyou/ademxapp/master/misc/ade20k_model_a1.pdf)|500|80.55|43.34|[aar](https://cloudstor.aarnet.edu.au/plus/index.php/s/E4JeZpmssK50kpn)
+model|testing scale|pixel accuracy (%)|mean IoU (%)|download
+:---|:---:|:---:|:---:|:---:
+[Model A1, 2 conv.](https://cdn.rawgit.com/itijyou/ademxapp/master/misc/ade20k_model_a1.pdf)|500|80.55|43.34|[aar](https://cloudstor.aarnet.edu.au/plus/index.php/s/E4JeZpmssK50kpn)
 
 
 ### Citation
